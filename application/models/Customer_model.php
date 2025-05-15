@@ -46,4 +46,24 @@ public function update_customer($customer_id, $post_data) {
     return $this->db->delete('customers');
   }
 
+  public function get_all_transactions_by_customer($customer_id)
+{
+    // Invoices
+    $this->db->select('id, "invoice" as type, created_at as date, total_amount as total')
+             ->from('customer_invoices')
+             ->where('customer_id', $customer_id);
+    $invoice_query = $this->db->get_compiled_select();
+
+    // Return Invoices
+    $this->db->select('id, "return_invoice" as type, return_date as date, total_return_amount as total')
+             ->from('invoice_returns')
+             ->where('customer_id', $customer_id);
+    $return_query = $this->db->get_compiled_select();
+
+    // Combine them
+    $query = $this->db->query($invoice_query . ' UNION ALL ' . $return_query . ' ORDER BY date DESC');
+
+    return $query->result();
+}
+
 }

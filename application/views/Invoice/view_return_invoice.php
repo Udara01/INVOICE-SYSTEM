@@ -6,109 +6,74 @@
   <title>Return Invoice Details</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f4f4f4;
+<style>
+  @media print {
+    .no-print {
+      display: none !important;
     }
-    h1, h3 {
-      color: #333;
-    }
-    .invoice-container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background-color: #f0f0f0;
-    }
-    .actions {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .btn {
-      padding: 10px 20px;
-      background-color: #007bff;
-      border: none;
-      color: #fff;
-      border-radius: 5px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .btn:hover {
-      background-color: #0056b3;
-    }
+  }
+</style>
 
-    @media print {
-      .actions {
-        display: none;
-      }
-      body {
-        background-color: white;
-      }
-    }
-  </style>
 </head>
 <body>
+<?php $this->load->view('layouts/navbar'); ?>
 
-<div class="invoice-container">
-  <h1>Return Invoice Details</h1>
-
-    <div>
-      <h3>Return Invoice: <?= $return_invoice->return_invoice_no ?></h3>
-      <p><strong>Original Invoice No:</strong> <?= $return_invoice->invoiceNo ?></p>
-      <p><strong>Invoice Data:</strong> <?= $return_invoice->created_at ?></p>
-      <p><strong>Customer:</strong> <?= $return_invoice->customer_name ?></p>
-      <p><strong>Reason:</strong> <?= $return_invoice->reason ?></p>
-      <p><strong>Return Date:</strong> <?= $return_invoice->return_date ?></p>
-      <p><strong>Total Return Amount:</strong> <?= number_format($return_invoice->total_return_amount, 2) ?></p>
+<div class="container my-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Return Invoice Details</h2>
     </div>
+    <div class="card-body">
+      <div class="mb-4">
+        <h4 class="text-secondary">Return Invoice: <?= $return_invoice->return_invoice_no ?></h4>
+        <p><strong>Original Invoice No:</strong> <?= $return_invoice->invoiceNo ?></p>
+        <p><strong>Invoice Date:</strong> <?= $return_invoice->created_at ?></p>
+        <p><strong>Customer:</strong> 
+          <a href="<?= site_url('Customer_controller/customer_transactions/' . $return_invoice->customer_id) ?>" 
+            class="text-decoration-none text-primary">
+            <?= $return_invoice->customer_name ?>
+          </a>
+        </p>
+        <p><strong>Reason:</strong> <?= $return_invoice->reason ?></p>
+        <p><strong>Return Date:</strong> <?= $return_invoice->return_date ?></p>
+        <p><strong>Total Return Amount:</strong> 
+          <span class="text-success fw-bold">Rs. <?= number_format($return_invoice->total_return_amount, 2) ?></span>
+        </p>
+      </div>
 
+      <h4 class="mt-4">Returned Items</h4>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-dark text-center">
+            <tr>
+              <th>Item Name</th>
+              <th>Quantity</th>
+              <th>Unit Price (Rs. )</th>
+              <th>Total (Rs. )</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($returned_items as $item): ?>
+            <tr>
+              <td><?= $item->itemName ?></td>
+              <td class="text-end"><?= $item->quantity ?></td>
+              <td class="text-end"><?= number_format($item->unit_price, 2) ?></td>
+              <td class="text-end"><?= number_format($item->total, 2) ?></td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
 
-  <h3>Returned Items</h3>
-  <table>
-    <thead>
-      <tr class="text-center">
-        <th class="text-center">Item Name</th>
-        <th class="text-center">Quantity</th>
-        <th class="text-center">Unit Price</th>
-        <th class="text-center">Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach ($returned_items as $item): ?>
-      <tr>
-        <td><?= $item->itemName ?></td>
-        <td class="text-end"><?= $item->quantity ?></td>
-        <td class="text-end"><?= number_format($item->unit_price, 2) ?></td>
-        <td class="text-end"><?= number_format($item->total, 2) ?></td>
-      </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
+      <div class="mt-4 d-flex justify-content-between no-print">
+        <a href="<?= site_url('returnInvoices/list') ?>" class="btn btn-secondary">Back to Invoice List</a>
+        <button onclick="window.print()" class="btn btn-success">Print</button>
+      </div>
 
-  <div class="actions">
-    <a href="<?= site_url('returnInvoices/list') ?>" class="btn">Back to Invoice List</a>
-    <button onclick="window.print()" class="btn">Print</button>
+    </div>
   </div>
 </div>
 
 </body>
+
 </html>

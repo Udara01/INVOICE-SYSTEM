@@ -32,14 +32,14 @@ class Item_model extends CI_Model {
     }
     public function update_item($item_id, $data)
     {
-        $this->db->where('id', $item_id); // Specify the item ID to update
-        return $this->db->update('items', $data); // Update the 'items' table
+        $this->db->where('id', $item_id); 
+        return $this->db->update('items', $data); 
     }
 
     public function delete_item($item_id)
     {
-        $this->db->where('id', $item_id); // Specify the item ID to delete
-        return $this->db->delete('items'); // Delete from the 'items' table
+        $this->db->where('id', $item_id); 
+        return $this->db->delete('items'); 
     }
 
 
@@ -53,5 +53,14 @@ public function getStockById($item_id) {
     $row = $query->row();
     return $row ? (int)$row->stock : 0;
 }
+
+
+public function increase_stock($item_id, $quantity) {
+    $this->db->set('stock', 'stock + ' . (int)$quantity, false);
+    $this->db->where('id', $item_id);
+    $this->db->update('items');
+}
+
+
 
 }

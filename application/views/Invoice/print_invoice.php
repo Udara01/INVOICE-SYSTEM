@@ -71,7 +71,13 @@
   <div class="card p-4 mb-4">
     <div class="row invoice-meta">
       <div class="col-md-6">
-        <p><strong>Customer:</strong> <?= $invoice->customer_name ?></p>
+        <p><strong>Customer:</strong> 
+          <a href="<?= site_url('Customer_controller/customer_transactions/' . $invoice->customer_id) ?>" 
+            class="text-decoration-none text-primary">
+            <?= $invoice->customer_name ?>
+          </a>
+        </p>
+
         <p><strong>Address:</strong> <?= $invoice->customer_address ?></p>
         <p><strong>Phone:</strong> <?= $invoice->customer_phone ?></p>
       </div>

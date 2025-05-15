@@ -56,5 +56,14 @@ public function get_return_invoice_by_original_invoice_id($invoice_id) {
     return $this->db->get('invoice_returns')->row(); // returns null if not found
 }
 
+public function update_invoice($id, $data) {
+    $this->db->where('id', $id);
+    $this->db->update('invoice_returns', $data);
+}
+
+public function delete_invoice($id) {
+    $this->db->where('id', $id);
+    $this->db->delete('invoice_returns');
+}
 
 }

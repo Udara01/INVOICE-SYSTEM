@@ -77,4 +77,10 @@ class Customer_controller extends CI_Controller {
     redirect('Customer_controller/Customer_list');
   }
 
+
+  public function customer_transactions($customer_id)
+{
+    $data['transactions'] = $this->Customer_model->get_all_transactions_by_customer($customer_id);
+    $this->load->view('Invoice/transactions_view', $data);
+}
 }

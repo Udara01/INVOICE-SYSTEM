@@ -107,6 +107,4 @@ public function delete_invoice_with_items($invoice_id)
     $this->db->where('id', $invoice_id);
     return $this->db->delete('customer_invoices');
 }
-
-
 }

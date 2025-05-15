@@ -41,10 +41,18 @@
                 <td class="text-end">Rs. <?= number_format($invoice->total_return_amount, 2) ?></td>
                 <td><?= htmlspecialchars($invoice->reason) ?></td>
                 <td class="text-center">
-                  <a href="<?= site_url('ReturnInvoice_controller/view_return_invoice/' . $invoice->id) ?>" class="btn btn-sm btn-outline-primary">
+                  <a href="<?= site_url('ReturnInvoice_controller/view_return_invoice/' . $invoice->id) ?>" class="btn btn-sm btn-outline-primary me-1">
                     View
                   </a>
+                  <a href="<?= site_url('ReturnInvoice_controller/edit_return_invoice/' . $invoice->id) ?>" class="btn btn-sm btn-outline-warning me-1">
+                    Edit
+                  </a>
+                  <a href="<?= site_url('ReturnInvoice_controller/delete_return_invoice/' . $invoice->id) ?>" class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Are you sure you want to delete this return invoice?');">
+                    Delete
+                  </a>
                 </td>
+
               </tr>
             <?php endforeach; ?>
           </tbody>
