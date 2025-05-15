@@ -86,7 +86,7 @@
             <form action="<?= site_url('Customer_invoice/update_invoice_item/' . $item->id . '/' . $invoice->id) ?>" method="POST">
               <td class="text-center"><?= $item->itemName ?></td>
               <td><input type="text" name="productDescription" class="form-control" value="<?= $item->productDescription ?>"></td>
-              <td><input type="number" readonly step="0.01" name="price" class="form-control text-end" value="<?= $item->price ?>"></td>
+              <td><input type="number" step="0.01" name="price" class="form-control text-end" value="<?= $item->price ?>"></td>
               <td><input type="number" name="quantity" class="form-control text-end" value="<?= $item->quantity ?>"></td>
               <td class="text-end"><?= number_format($item->price * $item->quantity, 2) ?></td>
               <td>
@@ -142,7 +142,7 @@
 
         <div class="col-md-2">
           <label for="price" class="form-label">Price</label>
-          <input type="text" class="form-control text-end" id="price" name="price" readonly>
+          <input type="text" class="form-control text-end" id="price" name="price">
         </div>
 
         <div class="col-md-1">

@@ -73,7 +73,7 @@
           </div>
           <div class="col-md-2">
             <label class="form-label">Price</label>
-            <input type="text" class="form-control" name="itemPrice[]" readonly>
+            <input type="text" class="form-control" name="itemPrice[]">
           </div>
           <div class="col-md-2">
             <label class="form-label">Quantity</label>

@@ -11,6 +11,7 @@ class Customer_invoices_model extends CI_Model {
 
   public function Add_Customer($invoice_data){
     $this->db->insert('customer_invoices', $invoice_data);
+    return $this->db->insert_id(); 
   }
   public function getLastInvoiceNo() {
     $this->db->select('invoiceNo');
@@ -28,8 +29,8 @@ class Customer_invoices_model extends CI_Model {
 
 public function getInvoiceByNo($invoiceNo) {
   $this->db->where('invoiceNo', $invoiceNo);
-  $query = $this->db->get('customer_invoices'); // replace with your actual invoice table name
-  return $query->row(); // returns a single row as object
+  $query = $this->db->get('customer_invoices'); 
+  return $query->row(); 
 }
 
 
@@ -60,7 +61,7 @@ public function getInvoiceItems($invoice_id) {
 
 
 public function getInvoiceItems($invoice_id) {
-  $this->db->select('invoice_items.*, items.itemName, items.price, items.description');
+  $this->db->select('invoice_items.*, items.itemName, items.description');
   $this->db->from('invoice_items');
   $this->db->join('customer_invoices', 'customer_invoices.id = invoice_items.invoice_ID');
   $this->db->join('items', 'items.id = invoice_items.productID');
@@ -82,7 +83,7 @@ public function getInvoiceWithDetails($invoice_id) {
     $this->db->join('users u1', 'ci.created_by = u1.id', 'left');
     $this->db->join('users u2', 'ci.updated_by = u2.id', 'left');
     $this->db->where('ci.id', $invoice_id);
-    return $this->db->get()->row();  // Use ->row() to return a single invoice object
+    return $this->db->get()->row();  
 }
 
 public function update_invoice($id, $data) {

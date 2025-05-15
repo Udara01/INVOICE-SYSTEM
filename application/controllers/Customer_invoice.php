@@ -71,7 +71,7 @@ class Customer_invoice extends CI_Controller {
   }
 
 
-
+/*
   public function Create_Invoice() {
     $invoice_No = $this->input->post('invoiceNo');
     $customer_id = $this->input->post('customer_id');
@@ -101,18 +101,92 @@ class Customer_invoice extends CI_Controller {
     $invoice_id = $this->db->insert_id(); 
 
     // Insert invoice items
-    for ($i = 0; $i < count($item_ids); $i++) {
-      $item_data = [
-          'invoice_ID' => $invoice_id, // Foreign key to customer_invoices.id
-          'invoiceNo'  => $invoice_No, // (optional) still storing invoiceNo
-          'productID'  => $item_ids[$i],
-          'quantity'   => $quantities[$i],
-          'productDescription' => $this->input->post('itemDescription')[$i],
-      ];
-      $this->Invoice_items_model->Add_invoiceItems($item_data);
-  }
+for ($i = 0; $i < count($item_ids); $i++) {
+    $item_id = $item_ids[$i];
+    $quantity = $quantities[$i];
+
+    
+    $item_data = [
+        'invoice_ID' => $invoice_id,
+        'invoiceNo'  => $invoice_No,
+        'productID'  => $item_id,
+        'quantity'   => $quantity,
+        'productDescription' => $this->input->post('itemDescription')[$i],
+    ];
+    
+    // 1. Add to invoice_items
+    $this->Invoice_items_model->Add_invoiceItems($item_data);
+
+    // 2. Reduce stock from items table
+    $this->Item_model->reduceStock($item_id, $quantity);
+}
 
     // Redirect to print preview
+    redirect('Customer_invoice/print_invoice/' . $invoice_id);
+}
+*/
+
+
+public function Create_Invoice() {
+    $invoice_No = $this->input->post('invoiceNo');
+    $customer_id = $this->input->post('customer_id');
+    $item_ids = $this->input->post('item_id');
+    $quantities = $this->input->post('itemQuantity');
+    $price = $this->input->post('itemPrice');
+    $total_amount = $this->input->post('totalAmount');
+    $user_id = $this->session->userdata('user_id');
+
+    if (!$user_id) {
+        show_error('User not logged in.');
+        return;
+    }
+
+    //Check all item stocks first
+    for ($i = 0; $i < count($item_ids); $i++) {
+        $item_id = $item_ids[$i];
+        $quantity = $quantities[$i];
+
+        $current_stock = $this->Item_model->getStockById($item_id);
+        if ($current_stock < $quantity) {
+            // Set error message with item ID or name (you can improve this with item name)
+            $this->session->set_flashdata('error', 'Not enough stock for item ID ' . $item_id . '. Available: ' . $current_stock);
+            redirect('Customer_invoice');
+            return;
+        }
+    }
+
+    // Insert invoice when stock is confirmed
+    $invoice_data = [
+        'invoiceNo'     => $invoice_No,
+        'customer_id'   => $customer_id,
+        'created_at'    => date('Y-m-d H:i:s'),
+        'total_amount'  => $total_amount,
+        'created_by'    => $user_id,
+    ];
+
+    $invoice_id = $this->Customer_invoices_model->Add_Customer($invoice_data);
+    //$this->Customer_invoices_model->Add_Customer($invoice_data);
+    //$invoice_id = $this->db->insert_id();
+
+    //Insert invoice items and reduce stock
+    for ($i = 0; $i < count($item_ids); $i++) {
+        $item_id = $item_ids[$i];
+        $quantity = $quantities[$i];
+
+        $item_data = [
+            'invoice_ID' => $invoice_id,
+            'invoiceNo'  => $invoice_No,
+            'productID'  => $item_id,
+            'quantity'   => $quantity,
+            'price' => $price[$i],
+            'productDescription' => $this->input->post('itemDescription')[$i],
+        ];
+
+        $this->Invoice_items_model->Add_invoiceItems($item_data);
+
+        $this->Item_model->reduceStock($item_id, $quantity);
+    }
+
     redirect('Customer_invoice/print_invoice/' . $invoice_id);
 }
 
@@ -171,6 +245,7 @@ public function add_invoice_item($invoice_id) {
       'productID' => $this->input->post('productID'),
       'productDescription' => $this->input->post('description'),
       'quantity' => $this->input->post('quantity'),
+      'price' => $this->input->post('price'),
       'invoiceNo' => $this->Customer_invoices_model->getInvoiceById($invoice_id)->invoiceNo,
       
   ];
@@ -233,18 +308,18 @@ public function delete_invoice($invoice_id)
 
 
 public function update_invoice_item($item_id, $invoice_id)
-{
+  {
 
-    $data = [
-        'productDescription' => $this->input->post('productDescription'),
-        'quantity'    => $this->input->post('quantity'),
-    ];
+      $data = [
+          'productDescription' => $this->input->post('productDescription'),
+          'quantity'    => $this->input->post('quantity'),
+      ];
 
-    $this->Invoice_items_model->update_invoice_item($item_id, $data);
+      $this->Invoice_items_model->update_invoice_item($item_id, $data);
 
-    $this->session->set_flashdata('success', 'Invoice item updated successfully.');
-    redirect('Customer_invoice/edit_invoice/' . $invoice_id);
-}
+      $this->session->set_flashdata('success', 'Invoice item updated successfully.');
+      redirect('Customer_invoice/edit_invoice/' . $invoice_id);
+  }
 
 
     

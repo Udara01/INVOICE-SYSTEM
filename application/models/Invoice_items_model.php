@@ -40,13 +40,13 @@ public function deleteInvoiceItemById($item_id) {
 
 
 public function getTotalByInvoiceId($invoice_id) {
-  $this->db->select('SUM(i.quantity * it.price) AS total');
-  $this->db->from('invoice_items i');
-  $this->db->join('items it', 'i.productID = it.id');
-  $this->db->where('i.invoice_ID', $invoice_id);
+  $this->db->select('SUM(quantity * price) AS total');
+  $this->db->from('invoice_items');
+  $this->db->where('invoice_ID', $invoice_id);
   $query = $this->db->get();
   return $query->row()->total ?? 0;
 }
+
 
 public function update_invoice_item($item_id, $data)
 {

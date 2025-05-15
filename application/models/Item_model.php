@@ -41,5 +41,17 @@ class Item_model extends CI_Model {
         $this->db->where('id', $item_id); // Specify the item ID to delete
         return $this->db->delete('items'); // Delete from the 'items' table
     }
-    
+
+
+    public function reduceStock($item_id, $qty) {
+    $this->db->set('stock', 'stock - ' . (int)$qty, FALSE);
+    $this->db->where('id', $item_id);
+    return $this->db->update('items');
+}
+public function getStockById($item_id) {
+    $query = $this->db->get_where('items', ['id' => $item_id]);
+    $row = $query->row();
+    return $row ? (int)$row->stock : 0;
+}
+
 }

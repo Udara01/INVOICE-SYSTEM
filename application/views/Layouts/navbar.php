@@ -24,6 +24,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/invoicelist">Invoice List</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/returnInvoices/list">Return Invoice List</a>
+        </li>
 
         <li class="nav-item">
         <a href="<?= base_url('logout') ?>" class="btn btn-danger">Logout</a>

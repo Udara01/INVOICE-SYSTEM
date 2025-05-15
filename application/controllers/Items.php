@@ -83,8 +83,9 @@ class Items extends CI_Controller {
 
 
     public function UpdateList(){
-        $this->load->model('Item_model'); 
+
         $data['items'] = $this->Item_model->showItems(); // Get all items from the model
+        $data['categories'] = $this->Category_model->get_CategoryList();
         $this->load->view('Item/updateItem', $data); // Pass the items to the view
     }
     
@@ -108,6 +109,7 @@ class Items extends CI_Controller {
         $item_description = $this->input->post('itemDescription');
         $item_id = $this->input->post('item_id'); 
         $item_stock = $this->input->post('itemStock');
+        $item_categoryID =  $this->input->post('itemCategory');
 
         $this->load->model('Item_model'); 
 
@@ -115,7 +117,8 @@ class Items extends CI_Controller {
           'itemName' => $item_name,
           'price' => $item_price,
           'description' => $item_description,
-        'stock' => $item_stock,
+          'stock' => $item_stock,
+          'category_ID' => $item_categoryID
         );
 
         if ($this->Item_model->update_item($item_id, $data)) {

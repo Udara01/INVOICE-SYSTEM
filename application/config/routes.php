@@ -108,3 +108,9 @@ $route['categoryadd'] = 'Category_controller/get_categories';
 
 
 $route['additem'] = 'Items/show_categories';
+
+
+$route['invoice/return'] = 'ReturnInvoice_controller/index';
+
+// config/routes.php
+$route['returnInvoices/list'] = 'ReturnInvoice_controller/index';

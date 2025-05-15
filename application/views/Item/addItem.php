@@ -33,61 +33,69 @@
 </head>
 <body class="bg-light">
 <?php $this->load->view('layouts/navbar'); ?>
-  <div class="container mt-5">
-    <div class='row justify-content-center'>
-  <div class="col-md-6 col-Xl-5">
-    <div class="card p-4 shadow">
-      <h3 class="mb-4">Add Item</h3>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card shadow p-4">
+        <h3 class="mb-4">Add Item</h3>
 
-      <form action="/item/addItem" method="post">
-      
-      <?php if (validation_errors()): ?>
-        <div class="alert alert-danger">
-          <?php echo validation_errors(); ?>
-        </div>
-      <?php endif; ?>
+        <form action="/item/addItem" method="post">
+          <?php if (validation_errors()): ?>
+            <div class="alert alert-danger">
+              <?php echo validation_errors(); ?>
+            </div>
+          <?php endif; ?>
 
-
-        <div class="mb-3">
-          <label for="itemName" class="form-label">Item Name</label>
-          <input type="text" name="itemName" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-          <label for="itemPrice" class="form-label">Category</label>
-            
-          <select id="category_select" name="category_ID" class="form-select" required>
-            <option value="" disabled selected>-- Select Category --</option>
-            <?php foreach ($categories as $category): ?>
-              <option value="<?= htmlspecialchars($category->id) ?>"
-                      data-name="<?= htmlspecialchars($category->category_name) ?>">
-                <?= htmlspecialchars($category->category_name) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="itemPrice" class="form-label">Item quentity</label>
-          <input type="number" step="0.01" name="stock" class="form-control" required>
-          </div>
-
-        <div class="mb-3">
-          <label for="itemPrice" class="form-label">Item Price (Rs.)</label>
-          <input type="number" step="0.01" name="itemPrice" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-          <label for="itemDescription" class="form-label">Description</label>
-          <textarea name="itemDescription" class="form-control" rows="3" required></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Add Item</button>
-      </form>
+          <table class="table table-bordered bg-white align-middle">
+            <tbody>
+              <tr>
+                <th style="width: 25%;">Item Name</th>
+                <td><input type="text" name="itemName" class="form-control" required></td>
+              </tr>
+              <tr>
+                <th>Category</th>
+                <td>
+                  <select id="category_select" name="category_ID" class="form-select" required>
+                    <option value="" disabled selected>-- Select Category --</option>
+                    <?php foreach ($categories as $category): ?>
+                      <option value="<?= htmlspecialchars($category->id) ?>">
+                        <?= htmlspecialchars($category->category_name) ?>
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>Quantity</th>
+                <td>
+                  <input type="number" step="0.01" name="stock" class="form-control" required>
+                </td>
+              </tr>
+              <tr>
+                <th>Item Price (Rs.)</th>
+                <td>
+                  <input type="number" step="0.01" name="itemPrice" class="form-control" required>
+                </td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td>
+                  <textarea name="itemDescription" class="form-control" rows="3" required></textarea>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <button type="submit" class="btn btn-primary w-100">Add Item</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
     </div>
   </div>
-  </div>
-  </div>
+</div>
+
 </body>
 </html>
 

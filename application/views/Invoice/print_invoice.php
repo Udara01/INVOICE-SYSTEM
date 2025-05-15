@@ -6,6 +6,8 @@
   <title>Invoice - <?= $invoice->invoiceNo ?></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -119,8 +121,16 @@
   <?php endif; ?>
 
   <div class="text-center mt-4">
-    <button class="btn btn-dark no-print" onclick="window.print()">🖨️ Print Invoice</button>
+    <button class="btn btn-dark no-print" onclick="window.print()"><i class="bi bi-printer-fill"></i> Print Invoice</button>
   </div>
+
+  <div class="text-center mt-3">
+    <a href="<?= site_url('ReturnInvoice_controller/return_invoice_entry/' . $invoice->id) ?>" class="btn btn-warning no-print">
+  <i class="bi bi-arrow-counterclockwise"></i> Return Invoice
+</a>
+
+  </div>
+
   <div class="text-center mt-4">
     <a href="<?= site_url('invoicelist') ?>" class="btn btn-secondary no-print">Back to Invoice List</a>
   </div>
