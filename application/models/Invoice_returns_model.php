@@ -66,4 +66,38 @@ public function delete_invoice($id) {
     $this->db->delete('invoice_returns');
 }
 
+
+public function GetAllReturnInvoices(){
+    $query = $this->db->query("CALL GetAllReturnInvoices()");
+    /*
+    USE qbl_test;
+
+DELIMITER  //
+
+create procedure GetAllReturnInvoices()
+begin
+	select
+		ir.id,
+        ir.return_invoice_no,
+		ci.invoiceNo AS original_invoice_no,
+        ir.return_date,
+        ir.customer_id,
+        ir.total_return_amount,
+        ir.reason,
+        c.name as customer_name,
+        COUNT(ri.id) as return_count
+        
+    from invoice_returns ir
+    join customers c on c.id = ir.customer_id 
+    left join returned_items ri on ri.return_invoice_id = ir.id
+	left join customer_invoices ci ON ci.id = ir.original_invoice_id
+    group by ir.id
+    order by ir.return_date desc;
+end //
+
+DELIMITER ;
+*/
+    return $query->result();
+}
+
 }

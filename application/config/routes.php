@@ -114,3 +114,8 @@ $route['invoice/return'] = 'ReturnInvoice_controller/index';
 
 // config/routes.php
 $route['returnInvoices/list'] = 'ReturnInvoice_controller/index';
+
+$route['dashboard'] = 'Dashboard_controller/index';
+
+$route['dashboard/return'] = 'Dashboard_controller/showReturnInvoice';
+

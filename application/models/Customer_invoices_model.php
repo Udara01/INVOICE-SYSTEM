@@ -107,4 +107,37 @@ public function delete_invoice_with_items($invoice_id)
     $this->db->where('id', $invoice_id);
     return $this->db->delete('customer_invoices');
 }
+
+
+//this is mysql stored procedure write on the db to get the all invoices details
+public function GetAllInvoices(){
+  $query = $this->db->query("CALL GetAllInvoices()");
+  /*
+USE qbl_test;
+
+DELIMITER  //
+
+create procedure GetAllInvoices()
+begin
+	select
+		ci.id,
+        ci.invoiceNo,
+        ci.created_at,
+        ci.total_amount,
+        ci.customer_id,
+        c.name as customer_name,
+        COUNT(ii.id) as item_count,
+        ci.status
+        
+    from customer_invoices ci
+    join customers c on c.id = ci.customer_id 
+    left join invoice_items ii on ii.invoice_ID = ci.id
+    group by ci.id
+    order by ci.created_at desc;
+end //
+
+DELIMITER ;
+*/
+  return $query->result();
+  }
 }
