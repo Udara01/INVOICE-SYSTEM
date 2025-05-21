@@ -171,7 +171,7 @@ if ($return_invoice_id) {
 
 
 public function return_invoice_entry($invoice_id) {
-    $existing_return = $this->Invoice_returns_model->get_return_invoice_by_original_invoice_id($invoice_id);
+    $existing_return = $this->Invoice_returns_model->check_Return_InvExist($invoice_id);
 
     if ($existing_return) {
         // Redirect to the existing return invoice view
@@ -250,7 +250,37 @@ public function update_return_invoice($return_invoice_id) {
     redirect('ReturnInvoice_controller/view_return_invoice/' . $return_invoice_id);
 }
 
+/**
+ * this is the method for load customers form tha database to view
+ * 
+ * 
+ */
 
+public function view_load_page() {
+    $data['customers'] = $this->Customer_model->get_all_customers();
+    $data['invoices'] = $this->Customer_model->get_all_valid_invoices_for_return(); // filtered
+    $this->load->view('Invoice/Return/returnload', $data);
+}
+
+
+public function load_return_Invoice($id) {
+    $invoice = $this->Customer_invoices_model->getInvoiceWithDetails($id);
+    $invoice_items = $this->Customer_invoices_model->getInvoiceItems($id);
+    $all_items = $this->Item_model->showItems();
+    $customers = $this->Customer_model->get_all_customers();
+
+    // Generate next return invoice number
+    $last_return = $this->Invoice_returns_model->getLastReturnInvoiceNo(); 
+    $next_invoice_number = $this->generateReturnInvoiceNumber($last_return);
+
+    $this->load->view('Invoice/Return/returnload', [
+        'invoice' => $invoice,
+        'invoice_items' => $invoice_items,
+        'all_items' => $all_items, 
+        'customers' => $customers,
+        'invoiceReturnNo' => $next_invoice_number, 
+    ]);
+}
 
 }
   

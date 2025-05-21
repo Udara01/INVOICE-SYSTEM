@@ -1,69 +1,290 @@
+<?php
+$query_string = http_build_query($_GET);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Invoice Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #1cc88a;
+      --danger-color: #e74a3b;
+      --warning-color: #f6c23e;
+      --dark-color: #5a5c69;
+    }
+    
+    body {
+      background-color: #f8f9fc;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      padding: 20px;
+    }
+    
+    .report-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      padding: 25px;
+    }
+    
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid #e3e6f0;
+      padding-bottom: 15px;
+    }
+    
+    .report-title {
+      color: var(--dark-color);
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .export-buttons .btn {
+      margin-left: 10px;
+    }
+    
+    .filter-section {
+      background-color: #f8f9fc;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 25px;
+    }
+    
+    .filter-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      align-items: end;
+    }
+    
+    .filter-group {
+      margin-bottom: 0;
+    }
+    
+    .filter-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: var(--dark-color);
+      font-size: 0.9rem;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d3e2;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    
+    th {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      padding: 12px 15px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+    
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e3e6f0;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    
+    .badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .badge-paid {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .badge-unpaid {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .text-right {
+      text-align: right;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+      .filter-form {
+        grid-template-columns: 1fr;
+      }
+      
+      .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .export-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+      
+      .export-buttons .btn {
+        margin-left: 0;
+        flex: 1;
+        margin: 0 5px;
+      }
+    }
+  </style>
 </head>
 <body>
+  
+  <div class="report-container">
+    <div class="report-header">
+      <h1 class="report-title">Invoice Report</h1>
+      <div class="export-buttons">
+        
+        <a href="<?= base_url('Dashboard_controller/createInvoicesExcel') ?>" class="btn btn-success">
+          <i class="bi bi-file-earmark-excel"></i> Export to Excel
+        </a>
 
-<a href="<?= base_url('Dashboard_controller/createInvoicesExcel') ?>" class="btn btn-success">Export to Excel</a>
-
-<a href="<?= base_url('Dashboard_controller/exportInvoicesToPDF') ?>" class="btn btn-danger">Export to PDF</a>
-
-
-<form method="get" action="">
-  <label>From: <input type="date" name="from_date" value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>"></label>
-  <label>To: <input type="date" name="to_date" value="<?= htmlspecialchars($_GET['to_date'] ?? '') ?>"></label>
-
-  <label>Customer:
-    <select name="customer_id">
-      <option value="">-- All --</option>
-      <?php foreach ($Customers as $customer): ?>
-        <option value="<?= $customer->id ?>" <?= (($_GET['customer_id'] ?? '') == $customer->id) ? 'selected' : '' ?>>
-          <?= htmlspecialchars($customer->name) ?>
-        </option>
-      <?php endforeach; ?>
-    </select>
-  </label>
-
-  <label>Status:
-    <select name="status">
-      <option value="">-- All --</option>
-      <option value="Paid" <?= (($_GET['status'] ?? '') == 'Paid') ? 'selected' : '' ?>>Paid</option>
-      <option value="Unpaid" <?= (($_GET['status'] ?? '') == 'Unpaid') ? 'selected' : '' ?>>Unpaid</option>
-    </select>
-  </label>
-
-  <button type="submit">Filter</button>
-</form>
+        <a href="<?= base_url('Dashboard_controller/createInvoicesExcel?' . $query_string) ?>" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Export to Excel</a>
 
 
-  <table>
-    <tr>
-      <th>#</th>
-      <th>InvoiceID</th>
-      <th>Date</th>
-      <th>Customer</th>
-      <th>Items</th>
-      <th>Total (Rs.)</th>
-      <th>Status</th>
-    </tr>
-    <?php $i = 1; ?>
-    <?php foreach ($Invoices as $invoice): ?>
-    <tr>
-      <td><?= $i++  ?></td>
-      <td><?= htmlspecialchars($invoice->invoiceNo) ?></td>
-      <td><?= htmlspecialchars($invoice->created_at) ?></td>
-      <td><?= htmlspecialchars($invoice->customer_name) ?></td>
-      <td><?= htmlspecialchars($invoice->item_count) ?></td>
 
-      <td><?= htmlspecialchars($invoice->total_amount) ?></td>
-      <td><?= htmlspecialchars($invoice->status) ?></td>
-    </tr>
-    <?php endforeach; ?>
-  </table>
+        <a href="<?= base_url('Dashboard_controller/exportInvoicesToPDF') ?>" class="btn btn-danger">
+          <i class="bi bi-file-earmark-pdf"></i> Export to PDF
+        </a>
 
+        <a href="<?= base_url('Dashboard_controller/exportInvoicesToPDF?' . $query_string) ?>" class="btn btn-danger"> <i class="bi bi-file-earmark-pdf"></i> Export to PDF</a>
 
+      </div>
+    </div>
+    
+    <div class="filter-section">
+      <form method="get" action="" class="filter-form">
+        <div class="filter-group">
+          <label>From Date</label>
+          <input type="date" name="from_date" value="<?= htmlspecialchars($_GET['from_date'] ?? '') ?>" class="form-control">
+        </div>
+        
+        <div class="filter-group">
+          <label>To Date</label>
+          <input type="date" name="to_date" value="<?= htmlspecialchars($_GET['to_date'] ?? '') ?>" class="form-control">
+        </div>
+        
+        <div class="filter-group">
+          <label>Customer</label>
+          <select name="customer_id" class="form-select">
+            <option value="">All Customers</option>
+            <?php foreach ($Customers as $customer): ?>
+              <option value="<?= $customer->id ?>" <?= (($_GET['customer_id'] ?? '') == $customer->id) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($customer->name) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>Status</label>
+          <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="Paid" <?= (($_GET['status'] ?? '') == 'Paid') ? 'selected' : '' ?>>Paid</option>
+            <option value="Unpaid" <?= (($_GET['status'] ?? '') == 'Unpaid') ? 'selected' : '' ?>>Unpaid</option>
+          </select>
+        </div>
+        
+        <div class="filter-group filter-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-funnel"></i> Filter
+          </button>
+          <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          </a>
+        </div>
+      </form>
+    </div>
+    
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Invoice ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th class="text-center">Items</th>
+            <th class="text-right">Total (Rs.)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if (count($Invoices) > 0): ?>
+            <?php $i = 1; ?>
+            <?php foreach ($Invoices as $invoice): ?>
+            <tr>
+              <td><?= $i++ ?></td>
+              <td><?= htmlspecialchars($invoice->invoiceNo) ?></td>
+              <td><?= date('M d, Y', strtotime($invoice->created_at)) ?></td>
+              <td><?= htmlspecialchars($invoice->customer_name) ?></td>
+              <td class="text-center"><?= htmlspecialchars($invoice->item_count) ?></td>
+              <td class="text-right"><?= number_format($invoice->total_amount, 2) ?></td>
+              <td>
+                <span class="badge badge-<?= strtolower($invoice->status) ?>">
+                  <?= htmlspecialchars($invoice->status) ?>
+                </span>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">No invoices found matching your criteria</td>
+            </tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

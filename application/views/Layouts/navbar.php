@@ -37,6 +37,9 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item">
+          <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer"></i> Home</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="/additem"><i class="bi bi-plus-square me-1"></i>Add Item</a>
         </li>
         <li class="nav-item">
@@ -55,7 +58,13 @@
           <a class="nav-link" href="/invoicelist"><i class="bi bi-list-ul me-1"></i>Invoice List</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/returnInvoices/list"><i class="bi bi-arrow-counterclockwise me-1"></i>Return Invoices</a>
+          <a class="nav-link" href="/load/return"><i class="bi bi-arrow-counterclockwise me-1"></i>Return Invoices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/returnInvoices/list"><i class="bi bi-list-ul me-1"></i>Return List</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/upload/list"><i class="bi bi-cloud-arrow-up"></i> Upload to Drive</a>
         </li>
         <li class="nav-item ms-lg-3 mt-1">
           <a href="<?= base_url('logout') ?>" class="btn btn-danger btn-sm d-flex align-items-center">

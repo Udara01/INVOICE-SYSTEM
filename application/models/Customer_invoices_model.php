@@ -49,15 +49,6 @@ public function getInvoiceById($id) {
   return $this->db->get_where('customer_invoices', ['id' => $id])->row();
 }
 
-/*
-public function getInvoiceItems($invoice_id) {
-  $this->db->select('invoice_items.*, productDescription, quantity');
-  $this->db->from('invoice_items');
-  $this->db->join('customer_invoices', 'customer_invoices.id = invoice_items.invoice_ID');
-  $this->db->where('invoice_items.invoice_ID', $invoice_id);
-  $query = $this->db->get();
-  return $query->result(); // This will return the list of invoice items
-}*/
 
 
 public function getInvoiceItems($invoice_id) {
@@ -110,8 +101,6 @@ public function delete_invoice_with_items($invoice_id)
 
 
 //this is mysql stored procedure write on the db to get the all invoices details
-public function GetAllInvoices(){
-  $query = $this->db->query("CALL GetAllInvoices()");
   /*
 USE qbl_test;
 
@@ -138,6 +127,115 @@ end //
 
 DELIMITER ;
 */
+/*public function GetAllInvoices(){
+  $query = $this->db->query("CALL GetAllInvoices()");
+
   return $query->result();
+  }*/
+
+/*
+  public function GetAllInvoices() {
+    $query = $this->db->query("CALL GetAllInvoices()");
+    $result = $query->result();
+
+    // Clear result set for the next stored procedure
+    mysqli_next_result($this->db->conn_id); 
+    return $result;
+}
+*/
+
+//when applying the filter option used dynamic queries in PHP. it's more accurate 
+public function GetAllInvoices($from_date = null, $to_date = null, $customer_id = null, $status = null) {
+    $this->db->select('ci.id, ci.invoiceNo, ci.created_at, ci.total_amount, ci.customer_id, c.name as customer_name, COUNT(ii.id) as item_count, ci.status');
+    $this->db->from('customer_invoices ci');
+    $this->db->join('customers c', 'c.id = ci.customer_id');
+    $this->db->join('invoice_items ii', 'ii.invoice_ID = ci.id', 'left');
+
+    // Apply filters
+    if (!empty($from_date)) {
+        $this->db->where('ci.created_at >=', $from_date);
+    }
+
+    if (!empty($to_date)) {
+        $this->db->where('ci.created_at <=', $to_date);
+    }
+
+    if (!empty($customer_id)) {
+        $this->db->where('ci.customer_id', $customer_id);
+    }
+
+    if (!empty($status)) {
+        $this->db->where('ci.status', $status);
+    }
+
+    $this->db->group_by('ci.id');
+    $this->db->order_by('ci.created_at', 'DESC');
+
+    $query = $this->db->get();
+    return $query->result();
   }
+
+
+/**
+ * Retrieves the total invoice amount for each customer, with optional filters
+ * based on customer ID and a date range.
+ *
+ * used Filters:
+ * - $from_date: (optional) Start date to filter invoices by creation date.
+ * - $to_date: (optional) End date to filter invoices by creation date.
+ * - $customer_id: (optional) Specific customer ID to filter by.
+ *
+ * as a output it return
+ * - An array of objects, each containing:
+ *   - customer_id
+ *   - total_amount (sum of all invoices for the customer within the filters)
+ */
+public function get_all_customers_invoice_summary($from_date = null, $to_date = null, $customer_id=null) {
+    $this->db->select('customer_id, SUM(total_amount) AS total_amount');
+    //
+    $this->db->from('customer_invoices');
+
+
+        // Apply customer filter
+    if(!empty($customer_id)){
+      $this->db->where('customer_id', $customer_id);
+    }
+
+    // Apply date range filters
+    if(!empty($from_date)){
+      $this->db->where('created_at >=', $from_date);
+    }
+    if (!empty($to_date)) {
+        $this->db->where('created_at <=', $to_date);
+    }
+
+    $this->db->group_by('customer_id');
+    $query = $this->db->get();
+
+    return $query->result();
+}
+
+  public function customer_invoice_count($from_date = null, $to_date = null, $customer_id=null){
+    $this->db->select('customer_id, COUNT(*) AS invoice_count');
+    $this->db->from('customer_invoices');
+
+    if(!empty($customer_id)){
+      $this->db->where('customer_id', $customer_id);
+    }
+
+    // Apply date range filters
+    if(!empty($from_date)){
+      $this->db->where('created_at >=', $from_date);
+    }
+    if (!empty($to_date)) {
+        $this->db->where('created_at <=', $to_date);
+    }
+
+    
+    $this->db->group_by('customer_id');
+    $query = $this->db->get();
+
+    return $query->result();
+  }
+
 }

@@ -51,8 +51,8 @@
 
     <div id="items-container">
       <div class="item-row card p-3 mb-3">
-        <div class="row g-3 align-items-center">
-          <div class="col-md-3">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-2">
             <label class="form-label">Item</label>
             <select class="form-select itemSelect" name="item_id[]" required>
               <option value="">Select Item</option>
@@ -71,10 +71,12 @@
             <label class="form-label">Description</label>
             <input type="text" class="form-control" name="itemDescription[]" readonly>
           </div>
+
           <div class="col-md-2">
             <label class="form-label">Price</label>
             <input type="text" class="form-control" name="itemPrice[]">
           </div>
+
           <div class="col-md-2">
             <label class="form-label">Quantity</label>
             <input type="number" class="form-control" name="itemQuantity[]" min="1" required>
@@ -84,13 +86,17 @@
             <label class="form-label">Total</label>
             <input type="text" class="form-control" name="itemTotal[]" readonly>
           </div>
-          
-          <div class="col-md-2 d-flex align-items-end">
-            <button type="button" class="btn btn-danger w-100" onclick="removeItem(this)">Remove</button>
+
+          <div class="col-md-1">
+            <label class="form-label">&nbsp;</label>
+            <button type="button" class="btn btn-outline-danger btn-sm w-100 mb-1" onclick="removeItem(this)">
+              <i class="bi bi-trash"></i>
+            </button>
           </div>
         </div>
       </div>
     </div>
+
 
     <button type="button" class="btn btn-secondary mb-3" onclick="addItem()">Add More Item</button>
 
@@ -109,12 +115,14 @@
 </div>
 
 <script>
+// Auto-fill the customer address when a customer is selected
 document.getElementById('customerSelect').addEventListener('change', function () {
   const selected = this.options[this.selectedIndex];
   const address = selected.dataset.address || '';
   document.getElementById('customerAddress').value = address;
 });
 
+// Populate item price and description based on selected item
 function updateItemDetails(selectElement) {
   const selected = selectElement.options[selectElement.selectedIndex];
   const row = selectElement.closest('.item-row');
@@ -123,12 +131,14 @@ function updateItemDetails(selectElement) {
   calculateTotals();
 }
 
+// Clone a new item row with blank fields
 function addItem() {
   const container = document.getElementById('items-container');
   const lastRow = container.querySelector('.item-row:last-of-type');
   const quantityInput = lastRow.querySelector('input[name="itemQuantity[]"]');
   const itemSelect = lastRow.querySelector('select');
 
+  // Validation before cloning
   if (!quantityInput.value || parseInt(quantityInput.value) <= 0) {
     alert("Please enter a valid quantity before adding a new item.");
     quantityInput.focus();
@@ -141,6 +151,7 @@ function addItem() {
     return;
   }
 
+  // Clone and reset new row
   const newRow = lastRow.cloneNode(true);
   const newSelect = newRow.querySelector('select');
   newSelect.selectedIndex = 0;

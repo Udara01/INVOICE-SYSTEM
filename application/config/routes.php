@@ -49,6 +49,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+
+
+
+
+
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
@@ -117,5 +122,19 @@ $route['returnInvoices/list'] = 'ReturnInvoice_controller/index';
 
 $route['dashboard'] = 'Dashboard_controller/index';
 
-$route['dashboard/return'] = 'Dashboard_controller/showReturnInvoice';
+$route['dashboard/invoice'] = 'Dashboard_controller/showInvoice';
+
+$route['dashboard/returnInv'] = 'Dashboard_controller/showReturnInvoice';
+
+$route['load/return'] = 'ReturnInvoice_controller/view_load_page';
+
+$route['customer_totals'] = 'Charts_controller/invoice_chart';
+$route['return_total'] = 'Charts_controller/return_invoice_chart';
+
+$route['invoice_count'] = 'Charts_controller/total_invoice';
+$route['return_count'] = 'Charts_controller/total_return_invoice';
+
+$route['upload'] = 'GoogleDriveUpload_controller/index';
+$route['upload/list'] = 'GoogleDriveUpload_controller/list_uploads';
+
 

@@ -66,4 +66,19 @@ public function update_customer($customer_id, $post_data) {
     return $query->result();
 }
 
+public function get_all_invoices() {
+    return $this->db->select('id, invoiceNo, customer_id')->from('customer_invoices')->get()->result();
+}
+
+public function get_all_valid_invoices_for_return() {
+    $this->db->select('ci.id, ci.invoiceNo, ci.customer_id');
+    $this->db->from('customer_invoices ci');
+    $this->db->join('invoice_returns ir', 'ci.id = ir.original_invoice_id', 'left');
+    $this->db->where('ir.original_invoice_id IS NULL');
+    return $this->db->get()->result();
+}
+
+
+
+
 }

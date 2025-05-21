@@ -29,6 +29,17 @@ class Customer_invoice extends CI_Controller {
         $this->load->library('form_validation');
     }
 
+/**
+ * This index method is used to load the 'createInvoice1' view with the '$data' array.
+ * 
+ * The following data is prepared and passed to the view as an array
+ * **'invoiceNo' - The next invoice number, which is generated based on the last invoice in the database.
+ * **'items'- A list of all available items fetched from the Item_model, It  use to select Items to add the Invoice.
+ * **'customers'- A list of all customers fetched from the Customer_model, when creating the Invoice can select the the customer.
+ * 
+ * all data sendto the view as an arrays.
+ * 
+ */
     public function index() {
       // Fetch the last invoice number from the database
       $last_invoice = $this->Customer_invoices_model->getLastInvoiceNo(); 
@@ -54,17 +65,20 @@ class Customer_invoice extends CI_Controller {
       echo json_encode(['id' => $id, 'name' => $data['name']]);
     }
 
-
+/**
+ * This is a method for generate new Invoice number based on the last saved invoice on the database
+ * 
+ * in the index method it called to this method which pass the last invoice number saved on the database.
+ * based on that this method create new number 
+ */
     private function generateInvoiceNumber($last_invoice) {
       // Check if there's a last invoice number
       if (empty($last_invoice)) {
           return 'INV-0001';
       }
 
-      
       preg_match('/(\d+)/', $last_invoice, $matches);
 
-      
       $last_number = (int) $matches[0];
       $new_number = str_pad($last_number + 1, 4, '0', STR_PAD_LEFT); 
       return 'INV-' . $new_number;
@@ -126,8 +140,22 @@ for ($i = 0; $i < count($item_ids); $i++) {
 }
 */
 
-
+/**
+ * this is the method for Create new Invoice.
+ * 
+ * user send data from the Invoice/createInvoice1. 
+ * This method handles the form submission from 'createInvoice1' view to create a new invoice.
+ * 
+ * process.
+ * 1. Retrieves invoice, customer, item, and total data from the form.
+ * 2. Validates that the user is logged in.
+ * 3. Checks if the stock is available for each item.
+ * 4. Inserts invoice data into the 'customer_invoices' table.
+ * 5. Inserts each invoice item into 'invoice_items' and updates item stock.
+ * 6. Redirects to the invoice print page.
+ */
 public function Create_Invoice() {
+  // Step 1 - Get posted form data
     $invoice_No = $this->input->post('invoiceNo');
     $customer_id = $this->input->post('customer_id');
     $item_ids = $this->input->post('item_id');
@@ -136,26 +164,27 @@ public function Create_Invoice() {
     $total_amount = $this->input->post('totalAmount');
     $user_id = $this->session->userdata('user_id');
 
+    // Step 2 - Ensure the user is logged in
     if (!$user_id) {
         show_error('User not logged in.');
         return;
     }
 
-    //Check all item stocks first
+    // Step 3: Check stock for each item
     for ($i = 0; $i < count($item_ids); $i++) {
         $item_id = $item_ids[$i];
         $quantity = $quantities[$i];
 
         $current_stock = $this->Item_model->getStockById($item_id);
         if ($current_stock < $quantity) {
-            // Set error message with item ID or name (you can improve this with item name)
+            // Set error message with item ID or name
             $this->session->set_flashdata('error', 'Not enough stock for item ID ' . $item_id . '. Available: ' . $current_stock);
             redirect('Customer_invoice');
             return;
         }
     }
 
-    // Insert invoice when stock is confirmed
+    // Step 4: Insert invoice data into the database
     $invoice_data = [
         'invoiceNo'     => $invoice_No,
         'customer_id'   => $customer_id,
@@ -163,12 +192,10 @@ public function Create_Invoice() {
         'total_amount'  => $total_amount,
         'created_by'    => $user_id,
     ];
-
     $invoice_id = $this->Customer_invoices_model->Add_Customer($invoice_data);
-    //$this->Customer_invoices_model->Add_Customer($invoice_data);
-    //$invoice_id = $this->db->insert_id();
 
-    //Insert invoice items and reduce stock
+
+    // Step 5: Insert each invoice item and reduce stock
     for ($i = 0; $i < count($item_ids); $i++) {
         $item_id = $item_ids[$i];
         $quantity = $quantities[$i];
@@ -183,10 +210,10 @@ public function Create_Invoice() {
         ];
 
         $this->Invoice_items_model->Add_invoiceItems($item_data);
-
         $this->Item_model->reduceStock($item_id, $quantity);
     }
 
+    // Step 6: Redirect to print invoice page
     redirect('Customer_invoice/print_invoice/' . $invoice_id);
 }
 
